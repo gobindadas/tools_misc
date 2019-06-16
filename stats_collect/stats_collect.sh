@@ -63,7 +63,7 @@ function stop_commands
     for h in ${HOSTS}; do
 	echo -n "${h}: "
 	for cmd in ${CMDS}; do
-	    ssh ${h} "pkill ${cmd}"
+	    ssh ${h} "pkill -x ${cmd}"
 	done
 	echo "done"
     done
