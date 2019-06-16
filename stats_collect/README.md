@@ -14,7 +14,7 @@ passwordless ssh to these hosts must work.
 
 The script is useful in one of three modes:
 
-1. Collect statistics for a fixed duration.
+### Collect statistics for a fixed duration.
 
 For example, to collects stats for a duration of 10 minutes, edit the
 script to set MON_DURATION=600.
@@ -25,7 +25,7 @@ Run the script with no arguments:
 At the end of MON_DURATION, stats from all the hosts are collected
 into a timestamped directory.
 
-1. Collects statistics for a duration, not known ahead of time.
+### Collects statistics for a duration, not known ahead of time.
 
 Set MON_DURATION in the script to a high value, run the script with no
 arguments:
@@ -35,7 +35,7 @@ Hit Ctrl-C when done. Stats from all hosts upto that time are
 collected into a timestamped directory.
 
 
-1. Collects statistics for the duration of a command/benchmark.
+### Collects statistics for the duration of a command/benchmark.
 
 ./stats_collect.sh start
 [command]
