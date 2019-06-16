@@ -23,7 +23,7 @@ passwordless ssh to these hosts must work. To check connectivity, run:
 
 For a regular run, output is gathered into a directory like this: 
 ```
-run_2019-06-16_1560680886. 
+run_2019-06-16_1560680886
 ```
 
 Files within the directory are named by monitoring command and host, like this: 
