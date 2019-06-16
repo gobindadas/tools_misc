@@ -11,9 +11,9 @@ Edit the HOSTS variable in the script to reflect the names or IPs of
 the systems on which stats collection is to be run.
 
 e.g:
-...
+```
 HOSTS="h1-priv h2-priv"
-...
+```
 
 passwordless ssh to these hosts must work. To check connectivity, run:
 
