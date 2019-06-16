@@ -71,12 +71,12 @@ timestamped directory.
 
 ## Extras
 
-1. Check ssh connectivity and verify that hosts are correctly specified:
+- Check ssh connectivity and verify that hosts are correctly specified:
 ```
 ./stats_collect.sh check
 ```
 
-1. Clean up any monitoring commands from a run that didn't complete cleanly:
+- Clean up any monitoring commands from a run that didn't complete cleanly:
 ```
 ./stats_collect.sh cleanup
 ```
