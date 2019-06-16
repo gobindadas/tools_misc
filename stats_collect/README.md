@@ -17,20 +17,20 @@ HOSTS="h1-priv h2-priv"
 
 passwordless ssh to these hosts must work. To check connectivity, run:
 
-...
+```
 ./stats_collect.sh check
-...
+```
 
 For a regular run, output is gathered into a directory like this: 
-...
+```
 run_2019-06-16_1560680886. 
-...
+```
 
 Files within the directory are named by monitoring command and host, like this: 
-...
+```
 iostat.h2-priv.txt
 sar.h3-priv.txt
-...
+```
 
 ## Modes of Operation 
 
@@ -42,9 +42,9 @@ For example, to collects stats for a duration of 10 minutes, edit the
 script to set MON_DURATION=600.
 
 Run the script with no arguments:
-...
+```
 ./stats_collect.sh
-...
+```
 
 At the end of MON_DURATION, stats from all the hosts are collected
 into a timestamped directory.
@@ -53,9 +53,9 @@ into a timestamped directory.
 
 Set MON_DURATION in the script to a higher value than the expected
 duration, run the script with no arguments:
-...
+```
 ./stats_collect.sh
-...
+```
 
 Hit Ctrl-C when you are ready to stop monitoring and gather the stats.
 Stats from all hosts from start of script are collected into a
@@ -63,21 +63,21 @@ timestamped directory.
 
 
 ### Collects statistics for the duration of a command/benchmark.
-...
+```
 ./stats_collect.sh start
 [command]
 ./stats_collect.sh stop
-...
+```
 
 ## Extras
 
 1. Check ssh connectivity and verify that hosts are correctly specified:
-...
+```
 ./stats_collect.sh check
-...
+```
 
 1. Clean up any monitoring commands from a run that didn't complete cleanly:
-...
+```
 ./stats_collect.sh cleanup
-...
+```
 
