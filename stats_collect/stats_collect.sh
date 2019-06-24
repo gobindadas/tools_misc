@@ -20,8 +20,8 @@ DEST_DIR="."
 # parameters section: END
 
 # commands and output-file-prefixes
-CMDS="sar iostat top"
-CMD_FILES="sar iostat top"
+CMDS="sar iostat top vmstat"
+CMD_FILES="sar iostat top vmstat"
 
 function print_usage
 {
@@ -51,6 +51,7 @@ function start_commands
 	ssh ${h} "nohup sar -n DEV -BdpqruW $MON_INTRVL > /tmp/sar.${h}.txt 2>&1 < /dev/null &"
 	ssh ${h} "nohup iostat -dkNtx $MON_INTRVL > /tmp/iostat.${h}.txt 2>&1 < /dev/null &"
 	ssh ${h} "nohup top -bH -d $MON_INTRVL > /tmp/top.${h}.txt 2>&1 < /dev/null &"
+	ssh ${h} "nohup vmstat -t $MON_INTRVL > /tmp/vmstat.${h}.txt 2>&1 < /dev/null &"
 	echo "done"
     done
     echo
