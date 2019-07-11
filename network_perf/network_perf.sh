@@ -7,7 +7,7 @@ ME=`basename $0`
 
 # put list of hosts here. passwordless ssh to these should work.
 HOSTS="localhost"
-HOSTS="h2 h3"
+# HOSTS="h2 h3"
 
 PING_DURATION=10
 IPERF_DURATION=30
@@ -17,7 +17,7 @@ DEST_DIR="."
 
 # by default, traffic is from every host to one lead host
 # set to "y", to have each host take a turn as lead host;
-# this measures traffic in both directions.
+# this measures traffic for all combinations.
 ALL_TO_ALL="n"
 
 # parameters section: END
@@ -33,27 +33,20 @@ function print_usage
     echo "Usage: $ME {test|check}"
 }
 
-function copy_results
+function ssh_check
 {
-    local ts
-    local res_dir
-
-    ts=`date +"%F_%s"`
-    res_dir="${DEST_DIR}/run_${ts}"
-    mkdir ${res_dir}
-
-    for lead in ${LEAD_HOSTS}; do
-	scp -q ${lead}:/tmp/iperf3.server_${lead}.txt ${res_dir}
-	for h in ${HOSTS}; do
-	    scp -q ${h}:/tmp/iperf3.client_${h}.server_${lead}.txt ${res_dir}
-	    scp -q ${h}:/tmp/ping.client_${h}.server_${lead}.txt ${res_dir}
-	done
+    echo
+    echo "checking ssh connectivity... "
+    for h in ${HOSTS}; do
+        echo -n "${h}: "
+        ssh -o ConnectTimeout=20 ${h} "hostname"
     done
-    echo "results gathered in directory: ${res_dir}"
-
+    echo "passed!"
+    echo
 }
 
-if [ "$1" = "test" ]; then
+function perform_tests
+{
 
     for lead in ${LEAD_HOSTS}; do
 	echo "starting iperf3 in server mode on ${lead}"
@@ -72,24 +65,43 @@ if [ "$1" = "test" ]; then
 	echo
     done
 
-    copy_results
+
+}
+
+function gather_results
+{
+    local ts
+    local res_dir
+
+    ts=`date +"%F_%s"`
+    res_dir="${DEST_DIR}/run_${ts}"
+    mkdir ${res_dir}
+
+    for lead in ${LEAD_HOSTS}; do
+	scp -q ${lead}:/tmp/iperf3.server_${lead}.txt ${res_dir}
+	for h in ${HOSTS}; do
+	    scp -q ${h}:/tmp/iperf3.client_${h}.server_${lead}.txt ${res_dir}
+	    scp -q ${h}:/tmp/ping.client_${h}.server_${lead}.txt ${res_dir}
+	done
+    done
+    echo "results gathered in directory: ${res_dir}"
+}
+
+if [ "$1" = "test" ]; then
+
+    perform_tests
+    gather_results
+    exit 0
 
 elif [ "$1" = "check" ]; then
 
-    echo "checking ssh connectivity to: ${HOSTS}"
-    for h in ${HOSTS}; do
-	echo -n "${h}: "
-	ssh -o ConnectTimeout=20 ${h} "hostname"
-    done
-    echo "passed!"
-    echo 
-    echo "NOTE: ensure iperf3 default port 5201 is open on $LEAD_HOST before running test"
+    ssh_check
+    exit 0
 
 else
     print_usage
     exit 1
 fi
 
-exit 0
 
 
