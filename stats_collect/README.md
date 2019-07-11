@@ -2,7 +2,7 @@
 Collect system statistics from a distributed set of systems.
 
 This script can be used to gather stats (sar, iostat etc.) from a set
-of systems for a period of time. The stats are gathetered into a
+of systems for a period of time. The stats are gathered into a
 single timestamped sub-directory, by default in the working directory.
 
 ## Basics
