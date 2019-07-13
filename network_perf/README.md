@@ -51,4 +51,15 @@ done by setting a variable in the script:
 ```
 ALL_TO_ALL="y"
 ```
+## Prerequisites
+
+1. passwordless ssh should work between hosts.
+1. iperf3 should be installed on all hosts.
+1. port used by iperf3 in server mode (5201/tcp by default) should be open.
+
+## Options
+
+Change the DEST_DIR variable in the script to control where the
+results directory is created. Set the IPERF3_PORT variable if the
+port used by iperf3 needs to be changed.
 

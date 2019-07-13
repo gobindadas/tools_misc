@@ -9,11 +9,14 @@ ME=`basename $0`
 HOSTS="localhost"
 # HOSTS="h2 h3"
 
-PING_DURATION=10
-IPERF_DURATION=30
-
 # output files are collected into a sub-dir here
 DEST_DIR="."
+
+PING_DURATION=10
+IPERF3_DURATION=30
+
+# port for iperf3 to use, in case default is not suitable
+# IPERF3_PORT=5201
 
 # by default, traffic is from every host to one lead host
 # set to "y", to have each host take a turn as lead host;
@@ -48,13 +51,19 @@ function ssh_check
 function perform_tests
 {
 
+    local port_option=""
+
+    if [ ! -z "${IPERF3_PORT}" ]; then
+	port_option="-p ${IPERF3_PORT}"
+    fi
+
     for lead in ${LEAD_HOSTS}; do
 	echo "starting iperf3 in server mode on ${lead}"
-	ssh $lead "nohup iperf3 -s > /tmp/iperf3.server_${lead}.txt 2>&1 < /dev/null &"
+	ssh $lead "nohup iperf3 -s ${port_option} > /tmp/iperf3.server_${lead}.txt 2>&1 < /dev/null &"
 
 	echo "running tests to ${lead} ..."
 	for h in ${HOSTS}; do
-	    ssh ${h} "iperf3 -c ${lead} -t ${IPERF_DURATION} > /tmp/iperf3.client_${h}.server_${lead}.txt"
+	    ssh ${h} "iperf3 -c ${lead} -t ${IPERF3_DURATION} ${port_option} > /tmp/iperf3.client_${h}.server_${lead}.txt"
 	    ssh ${h} "ping -c ${PING_DURATION} ${lead} > /tmp/ping.client_${h}.server_${lead}.txt"
 	    echo "    ${h} done"
 	done
@@ -64,7 +73,6 @@ function perform_tests
 	ssh ${lead} "pkill -x iperf3"
 	echo
     done
-
 
 }
 
