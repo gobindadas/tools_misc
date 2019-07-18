@@ -18,10 +18,14 @@ IPERF3_DURATION=30
 # port for iperf3 to use, in case default is not suitable
 # IPERF3_PORT=5201
 
+# number of parallel streams
+# with bonding set this to at least the number of interfaces bonded 
+# IPERF3_STREAMS=1
+
 # by default, traffic is from every host to one lead host
 # set to "y", to have each host take a turn as lead host;
 # this measures traffic for all combinations.
-ALL_TO_ALL="n"
+ALL_TO_ALL="y"
 
 # parameters section: END
 
@@ -51,10 +55,17 @@ function ssh_check
 function perform_tests
 {
 
-    local port_option=""
+    local port_option
+    local client_option
 
+    port_option=""
     if [ ! -z "${IPERF3_PORT}" ]; then
 	port_option="-p ${IPERF3_PORT}"
+    fi
+
+    client_option="-t ${IPERF3_DURATION}"
+    if [ ! -z "${IPERF3_STREAMS}" ]; then
+	client_option="${client_option} -P ${IPERF3_STREAMS}"
     fi
 
     for lead in ${LEAD_HOSTS}; do
@@ -63,7 +74,7 @@ function perform_tests
 
 	echo "running tests to ${lead} ..."
 	for h in ${HOSTS}; do
-	    ssh ${h} "iperf3 -c ${lead} -t ${IPERF3_DURATION} ${port_option} > /tmp/iperf3.client_${h}.server_${lead}.txt"
+	    ssh ${h} "iperf3 -c ${lead} ${client_option} ${port_option} > /tmp/iperf3.client_${h}.server_${lead}.txt"
 	    ssh ${h} "ping -c ${PING_DURATION} ${lead} > /tmp/ping.client_${h}.server_${lead}.txt"
 	    echo "    ${h} done"
 	done
@@ -110,6 +121,5 @@ else
     print_usage
     exit 1
 fi
-
 
 
