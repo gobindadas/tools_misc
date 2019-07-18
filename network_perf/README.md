@@ -59,7 +59,7 @@ ALL_TO_ALL="y"
 
 ## Options
 
-Change the DEST_DIR variable in the script to control where the
-results directory is created. Set the IPERF3_PORT variable if the
-port used by iperf3 needs to be changed.
+1. Change the DEST_DIR variable in the script to control where the results directory is created. 
+1. Set the IPERF3_PORT variable in the script if the port used by iperf3 needs to be changed.
+1. Set the IPERF3_STREAMS variable in the script to use multiple parallel streams.  With bonding, set this to the number of interfaces bonded together.
 
