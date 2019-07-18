@@ -19,7 +19,7 @@ IPERF3_DURATION=30
 # IPERF3_PORT=5201
 
 # number of parallel streams
-# with bonding set this to at least the number of interfaces bonded 
+# with bonding set this to the number of interfaces bonded 
 # IPERF3_STREAMS=1
 
 # by default, traffic is from every host to one lead host
