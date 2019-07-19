@@ -25,7 +25,7 @@ IPERF3_DURATION=30
 # by default, traffic is from every host to one lead host
 # set to "y", to have each host take a turn as lead host;
 # this measures traffic for all combinations.
-ALL_TO_ALL="y"
+ALL_TO_ALL="n"
 
 # parameters section: END
 
@@ -42,11 +42,13 @@ function print_usage
 
 function ssh_check
 {
+    local host
+
     echo
     echo "checking ssh connectivity... "
-    for h in ${HOSTS}; do
-        echo -n "${h}: "
-        ssh -o ConnectTimeout=20 ${h} "hostname"
+    for host in ${HOSTS}; do
+        echo -n "${host}: "
+        ssh -o ConnectTimeout=20 ${host} "hostname"
     done
     echo "passed!"
     echo
@@ -55,8 +57,8 @@ function ssh_check
 function perform_tests
 {
 
-    local port_option
-    local client_option
+    local port_option client_option
+    local lead host
 
     port_option=""
     if [ ! -z "${IPERF3_PORT}" ]; then
@@ -73,10 +75,10 @@ function perform_tests
 	ssh $lead "nohup iperf3 -s ${port_option} > /tmp/iperf3.server_${lead}.txt 2>&1 < /dev/null &"
 
 	echo "running tests to ${lead} ..."
-	for h in ${HOSTS}; do
-	    ssh ${h} "iperf3 -c ${lead} ${client_option} ${port_option} > /tmp/iperf3.client_${h}.server_${lead}.txt"
-	    ssh ${h} "ping -c ${PING_DURATION} ${lead} > /tmp/ping.client_${h}.server_${lead}.txt"
-	    echo "    ${h} done"
+	for host in ${HOSTS}; do
+	    ssh ${host} "iperf3 -c ${lead} ${client_option} ${port_option} > /tmp/iperf3.client_${host}.server_${lead}.txt"
+	    ssh ${host} "ping -c ${PING_DURATION} ${lead} > /tmp/ping.client_${host}.server_${lead}.txt"
+	    echo "    ${host} done"
 	done
 	echo "tests to ${lead} done"
 
@@ -89,8 +91,8 @@ function perform_tests
 
 function gather_results
 {
-    local ts
-    local res_dir
+    local ts res_dir
+    local lead host
 
     ts=`date +"%F_%s"`
     res_dir="${DEST_DIR}/run_${ts}"
@@ -98,9 +100,9 @@ function gather_results
 
     for lead in ${LEAD_HOSTS}; do
 	scp -q ${lead}:/tmp/iperf3.server_${lead}.txt ${res_dir}
-	for h in ${HOSTS}; do
-	    scp -q ${h}:/tmp/iperf3.client_${h}.server_${lead}.txt ${res_dir}
-	    scp -q ${h}:/tmp/ping.client_${h}.server_${lead}.txt ${res_dir}
+	for host in ${HOSTS}; do
+	    scp -q ${host}:/tmp/iperf3.client_${host}.server_${lead}.txt ${res_dir}
+	    scp -q ${host}:/tmp/ping.client_${host}.server_${lead}.txt ${res_dir}
 	done
     done
     echo "results gathered in directory: ${res_dir}"
