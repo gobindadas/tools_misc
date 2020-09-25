@@ -1,0 +1,30 @@
+
+# simulate workloads running concurrently with etcd
+add_seqw: true
+add_randrw: true
+
+# common parameters
+output_dir: '.'
+runtime_sec: 60
+
+# primary workload parameters
+etc_bs_kb: 1
+etc_dir: /tmp
+# etc_logfile: will be {{ etc_dir }}/logfile
+etc_fsz_gb: 4
+
+# sequential write workload parameters
+seqw_syncfreq: 16 # fdatasync after this many I/Os
+seqw_bs_kb: 64
+seqw_dir: /tmp
+seqw_fsz_gb: 1
+seqw_numjobs: 1
+
+# random read/write workload parameters
+randrw_iodepth: 32
+randrw_bs_kb: 8
+randrw_dir: /tmp
+randrw_fsz_gb: 1
+randrw_numjobs: 1
+randrw_readpct: 70
+

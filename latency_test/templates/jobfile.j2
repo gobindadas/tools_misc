@@ -1,0 +1,48 @@
+
+[etc-write]
+new_group
+rw=write
+ioengine=sync
+fdatasync=1
+bs={{ etc_bs_kb }}k
+filename={{ etc_logfile }}
+filesize={{ etc_fsz_gb }}g
+time_based=1
+runtime={{ runtime_sec }}
+
+{% if add_seqw %}
+
+[workload-seqw]
+new_group
+rw=write
+ioengine=sync
+fdatasync={{ seqw_syncfreq }}
+bs={{ seqw_bs_kb }}k
+directory={{ seqw_dir }}
+filename_format=seqw.\$jobnum.\$filenum
+filesize={{ seqw_fsz_gb }}g
+numjobs={{ seqw_numjobs }}
+time_based=1
+runtime={{ runtime_sec }}
+
+{% endif %}
+
+{% if add_randrw %}
+
+[workload-randrw]
+new_group
+rw=randrw
+ioengine=libaio
+direct=1
+iodepth={{ randrw_iodepth }}
+bs={{ randrw_bs_kb }}k
+directory={{ randrw_dir }}
+filename_format=randrw.\$jobnum.\$filenum
+filesize={{ randrw_fsz_gb }}g
+numjobs={{ randrw_numjobs }}
+rwmixread={{ randrw_readpct }}
+time_based=1
+runtime={{ runtime_sec }}
+
+{% endif %}
+
