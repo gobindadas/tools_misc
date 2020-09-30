@@ -8,7 +8,7 @@ output_dir: '.'
 runtime_sec: 60
 
 # primary workload parameters
-etc_bs_kb: 1
+etc_bs_kb: 2
 etc_dir: /tmp
 # etc_logfile: will be {{ etc_dir }}/logfile
 etc_fsz_gb: 4
@@ -21,6 +21,7 @@ seqw_fsz_gb: 1
 seqw_numjobs: 1
 
 # random read/write workload parameters
+randrw_syncfreq: 64 # fdatasync after this many I/Os
 randrw_iodepth: 32
 randrw_bs_kb: 8
 randrw_dir: /tmp

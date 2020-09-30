@@ -1,6 +1,7 @@
 
 # etc_dir should be on the device used by etcd
-# seqw_dir and randrw_dir should be on devices used by other workloads
+# seqw_dir and randrw_dir typically have same value,
+# they should be on devices used by other workloads
 #
 etc_dir: /root/mpillai/raft
 seqw_dir: /root/mpillai/work
@@ -8,16 +9,18 @@ randrw_dir: /root/mpillai/work
 output_dir: /tmp
 
 # common parameter for all workloads
-runtime_sec: 180
+# runtime_sec: 180
 
-# more jobs generally means more load
 # get latency for different load points
+# load is being controlled using fio numjobs option
+# more numjobs usualy means higher load
 #
 numjobs_list:
   - 2
   - 4
 
-# data set created depends on max numjobs and file size 
+# target data set size >= 2x cache size (i.e. total memory)
+# data_set_sz_gb = (seqw_fsz_gb + randrw_fsz_gb) * numjobs_list[-1] + 4
 # make sure there is enough space on the devices
 #
 # seqw_fsz_gb: 8

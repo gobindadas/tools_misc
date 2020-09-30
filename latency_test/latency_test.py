@@ -13,21 +13,18 @@ args = parser.parse_args ()
 # create dict of input params
 #
 if args.input_file:
-    yaml_input = open (args.input_file)
-    input_params = yaml.safe_load (yaml_input)
-    yaml_input.close ()
+    with open (args.input_file) as yaml_input:
+        input_params = yaml.safe_load (yaml_input)
+    if input_params is None:
+        input_params = {}
 else:
     input_params = {}
 
-if input_params is None:
-    input_params = {}
 
 # create dict of default params
 #
-yaml_input = open ('./defaults.yaml')
-run_params = yaml.safe_load (yaml_input)
-yaml_input.close ()
-
+with open ('./defaults.yaml') as yaml_input:
+    run_params = yaml.safe_load (yaml_input)
 if run_params is None:
     run_params = {}
 
@@ -36,6 +33,8 @@ run_params.update (input_params)
 run_params['etc_logfile'] = run_params['etc_dir'] + '/logfile'
 
 for numjobs in run_params['numjobs_list']:
+
+    print (f'iteration with numjobs = {numjobs}')
 
     run_params['seqw_numjobs'] = numjobs
     run_params['randrw_numjobs'] = numjobs
