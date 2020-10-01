@@ -2,9 +2,19 @@
 
 import argparse
 import yaml
+import time
 import subprocess
 import copy
 from jinja2 import Environment, FileSystemLoader
+
+# create a subdirectory based on a tag and current time
+def createdir_ts (path, tag):
+
+    ts = str (time.time ())
+    subdir = path + '/' + tag + ts
+
+    subprocess.run (["mkdir", subdir])
+    return subdir
 
 parser = argparse.ArgumentParser ()
 parser.add_argument ("-i", "--input_file", help="name of yaml file with run parameters") 
@@ -59,6 +69,7 @@ for dir_dict in dirlist:
 
     print (f'test {run_tag}')
 
+    i_inner = 0
     for numjobs in njobslist:
 
         print (f'iteration with numjobs = {numjobs}')
@@ -88,8 +99,12 @@ for dir_dict in dirlist:
         rendered_job = template.render (run_params)
 
         # create a directory for run
-        output_dir = run_params['output_dir'] + run_tag 
-        subprocess.run (["mkdir", "-p" , run_tag])
+        if i_outer == 0 and i_inner == 0:
+            run_outdir = createdir_ts (run_params['output_dir'], 'run_')
+
+        if i_inner == 0:
+            output_dir = run_outdir + '/' + run_tag
+            subprocess.run (["mkdir", "-p" , output_dir])
 
         # fio jobfile
         jobfile = output_dir + '/jobfile.' + str (numjobs) + '.fio'
@@ -101,7 +116,8 @@ for dir_dict in dirlist:
             '/run.' + str (numjobs) + '.out'
 
         # run fio 
-        subprocess.run (["fio", jobfile, fio_output_option])
+        subprocess.check_output (["fio", jobfile, fio_output_option])
+        i_inner += 1
 
     i_outer += 1
 
