@@ -15,7 +15,7 @@ randrw_dir: /tmp # /mnt/hddmnt/other
 output_dir: /tmp
 
 # target data set size >= 2x cache size (i.e. total memory)
-# power of 2 recommended
+# power of 2 recommended, multiple of highest value in numjobs_list
 # make sure there is enough space on the devices
 #
 seqw_dataset_sz_gb: 4 # 64

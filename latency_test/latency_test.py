@@ -48,15 +48,16 @@ for dir_dict in dirlist:
     # make a copy of input params
     loop_params = copy.deepcopy (input_params)
 
+    # tag is optional
     if 'tag' in dir_dict:
         run_tag = dir_dict['tag']
     else:
         run_tag = 'etcd-config-' + str (i_outer)
 
-    print (f'test {run_tag}')
+    # dir is not optional
+    loop_params['etc_dir'] = dir_dict['dir']
 
-    if 'dir' in dir_dict:
-        loop_params['etc_dir'] = dir_dict['dir']
+    print (f'test {run_tag}')
 
     for numjobs in njobslist:
 
