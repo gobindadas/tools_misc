@@ -1,28 +1,34 @@
 
-# etc_dir should be on the device used by etcd
-# seqw_dir and randrw_dir typically have same value,
-# they should be on devices used by other workloads
+# etcd_dirlist: these should be on devices used by etcd
+# this allows testing latency of different etcd configurations
+# seqw_dir and randrw_dir should be on devices used by other workloads
+# typically, seqw_dir and randrw_dir are the same
 #
-etc_dir: /root/mpillai/raft
-seqw_dir: /root/mpillai/work
-randrw_dir: /root/mpillai/work
+etcd_dirlist:
+  - tag: ssd
+    dir: /tmp # /mnt/ssdmnt/raft
+  - tag: hdd
+    dir: /tmp # /mnt/hddmnt/raft
+
+seqw_dir: /tmp # /mnt/hddnt/other
+randrw_dir: /tmp # /mnt/hddmnt/other
 output_dir: /tmp
 
-# common parameter for all workloads
-# runtime_sec: 180
+# target data set size >= 2x cache size (i.e. total memory)
+# power of 2 recommended
+# make sure there is enough space on the devices
+#
+seqw_dataset_sz_gb: 4 # 64
+randrw_dataset_sz_gb: 4 # 128
 
 # get latency for different load points
-# load is being controlled using fio numjobs option
 # more numjobs usualy means higher load
 #
 numjobs_list:
   - 2
   - 4
 
-# target data set size >= 2x cache size (i.e. total memory)
-# data_set_sz_gb = (seqw_fsz_gb + randrw_fsz_gb) * numjobs_list[-1] + 4
-# make sure there is enough space on the devices
+# common parameter for all workloads
 #
-# seqw_fsz_gb: 8
-# randrw_fsz_gb: 8
+# runtime_sec: 180
 

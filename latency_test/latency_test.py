@@ -3,6 +3,7 @@
 import argparse
 import yaml
 import subprocess
+import copy
 from jinja2 import Environment, FileSystemLoader
 
 parser = argparse.ArgumentParser ()
@@ -28,32 +29,78 @@ with open ('./defaults.yaml') as yaml_input:
 if run_params is None:
     run_params = {}
 
-# update default params with input values to get run params
-run_params.update (input_params)
-run_params['etc_logfile'] = run_params['etc_dir'] + '/logfile'
+# dirlist is a list of dict
+dirlist = input_params.pop ('etcd_dirlist', [])
+if dirlist is None:
+    dirlist = []
 
-for numjobs in run_params['numjobs_list']:
+# njobslist is a list of integers (numjobs)
+njobslist = input_params.pop ('numjobs_list', [])
+if njobslist is None:
+    njobslist = []
 
-    print (f'iteration with numjobs = {numjobs}')
+i_outer = 0
+for dir_dict in dirlist:
 
-    run_params['seqw_numjobs'] = numjobs
-    run_params['randrw_numjobs'] = numjobs
+    if dir_dict is None:
+        dir_dict = {}
 
-    file_loader = FileSystemLoader ('./templates')
-    env = Environment (loader=file_loader, trim_blocks=True)
-    template = env.get_template ('jobfile.j2')
+    # make a copy of input params
+    loop_params = copy.deepcopy (input_params)
 
-    rendered_job = template.render (run_params)
-    jobfile = run_params['output_dir'] + '/jobfile.' + str (numjobs) + '.fio'
+    if 'tag' in dir_dict:
+        run_tag = dir_dict['tag']
+    else:
+        run_tag = 'etcd-config-' + str (i_outer)
 
-    jobfile_out = open (jobfile, 'w')
-    print (rendered_job, file = jobfile_out)
-    jobfile_out.close ()
+    print (f'test {run_tag}')
 
-    fio_output_option = '--output=' + run_params['output_dir'] + \
-        '/run.' + str (numjobs) + '.out'
+    if 'dir' in dir_dict:
+        loop_params['etc_dir'] = dir_dict['dir']
 
-    # run fio 
-    subprocess.run (["fio", jobfile, fio_output_option])
+    for numjobs in njobslist:
 
+        print (f'iteration with numjobs = {numjobs}')
+
+        loop_params['seqw_numjobs'] = numjobs
+        loop_params['randrw_numjobs'] = numjobs
+
+        # derive file sizes
+        if 'seqw_datatset_sz_gb' in loop_params:
+            loop_params['seqw_fsz_gb'] = \
+                loop_params['seqw_datatset_sz_gb'] / numjobs
+
+        if 'randrw_datatset_sz_gb' in loop_params:
+            loop_params['randrw_fsz_gb'] = \
+                loop_params['randrw_datatset_sz_gb'] / numjobs
+
+        # update default params with input values to get run params
+        run_params.update (loop_params)
+
+        # set derived parameters
+        run_params['etc_logfile'] = run_params['etc_dir'] + '/logfile'
+
+        file_loader = FileSystemLoader ('./templates')
+        env = Environment (loader=file_loader, trim_blocks=True)
+        template = env.get_template ('jobfile.j2')
+
+        rendered_job = template.render (run_params)
+
+        # create a directory for run
+        output_dir = run_params['output_dir'] + run_tag 
+        subprocess.run (["mkdir", "-p" , run_tag])
+
+        # fio jobfile
+        jobfile = output_dir + '/jobfile.' + str (numjobs) + '.fio'
+
+        with open (jobfile, 'w') as jobfile_out:
+            print (rendered_job, file = jobfile_out)
+
+        fio_output_option = '--output=' + output_dir + \
+            '/run.' + str (numjobs) + '.out'
+
+        # run fio 
+        subprocess.run (["fio", jobfile, fio_output_option])
+
+    i_outer += 1
 
