@@ -85,10 +85,10 @@ for dir_dict in dirlist:
 
         # derive file sizes
         run_params['seqw_fsz_gb'] = \
-            run_params['seqw_datatset_sz_gb'] / numjobs
+            run_params['seqw_dataset_sz_gb'] / numjobs
 
         run_params['randrw_fsz_gb'] = \
-            run_params['randrw_datatset_sz_gb'] / numjobs
+            run_params['randrw_dataset_sz_gb'] / numjobs
 
         file_loader = FileSystemLoader ('./templates')
         env = Environment (loader=file_loader, trim_blocks=True)
