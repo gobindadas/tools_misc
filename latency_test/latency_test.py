@@ -31,7 +31,6 @@ if args.input_file:
 else:
     input_params = {}
 
-
 # create dict of default params
 #
 with open ('./defaults.yaml') as yaml_input:
@@ -39,24 +38,26 @@ with open ('./defaults.yaml') as yaml_input:
 if run_params is None:
     run_params = {}
 
+# update default params with input values to get run params
+run_params.update (run_params)
+
 # dirlist is a list of dict
-dirlist = input_params.pop ('etcd_dirlist', [])
+dirlist = run_params.pop ('etcd_dirlist', [])
 if dirlist is None:
     dirlist = []
 
 # njobslist is a list of integers (numjobs)
-njobslist = input_params.pop ('numjobs_list', [])
+njobslist = run_params.pop ('numjobs_list', [])
 if njobslist is None:
     njobslist = []
+
+run_outdir = createdir_ts (run_params['output_dir'], 'run_')
 
 i_outer = 0
 for dir_dict in dirlist:
 
     if dir_dict is None:
         dir_dict = {}
-
-    # make a copy of input params
-    loop_params = copy.deepcopy (input_params)
 
     # tag is optional
     if 'tag' in dir_dict:
@@ -65,46 +66,35 @@ for dir_dict in dirlist:
         run_tag = 'etcd-config-' + str (i_outer)
 
     # dir is not optional
-    loop_params['etc_dir'] = dir_dict['dir']
+    run_params['etc_dir'] = dir_dict['dir']
+
+    # set derived parameters
+    run_params['etc_logfile'] = run_params['etc_dir'] + '/logfile'
 
     print (f'test {run_tag}')
 
-    i_inner = 0
+    output_dir = run_outdir + '/' + run_tag
+    subprocess.run (["mkdir", "-p" , output_dir])
+
     for numjobs in njobslist:
 
         print (f'iteration with numjobs = {numjobs}')
 
-        loop_params['seqw_numjobs'] = numjobs
-        loop_params['randrw_numjobs'] = numjobs
+        run_params['seqw_numjobs'] = numjobs
+        run_params['randrw_numjobs'] = numjobs
 
         # derive file sizes
-        if 'seqw_datatset_sz_gb' in loop_params:
-            loop_params['seqw_fsz_gb'] = \
-                loop_params['seqw_datatset_sz_gb'] / numjobs
+        run_params['seqw_fsz_gb'] = \
+            run_params['seqw_datatset_sz_gb'] / numjobs
 
-        if 'randrw_datatset_sz_gb' in loop_params:
-            loop_params['randrw_fsz_gb'] = \
-                loop_params['randrw_datatset_sz_gb'] / numjobs
-
-        # update default params with input values to get run params
-        run_params.update (loop_params)
-
-        # set derived parameters
-        run_params['etc_logfile'] = run_params['etc_dir'] + '/logfile'
+        run_params['randrw_fsz_gb'] = \
+            run_params['randrw_datatset_sz_gb'] / numjobs
 
         file_loader = FileSystemLoader ('./templates')
         env = Environment (loader=file_loader, trim_blocks=True)
         template = env.get_template ('jobfile.j2')
 
         rendered_job = template.render (run_params)
-
-        # create a directory for run
-        if i_outer == 0 and i_inner == 0:
-            run_outdir = createdir_ts (run_params['output_dir'], 'run_')
-
-        if i_inner == 0:
-            output_dir = run_outdir + '/' + run_tag
-            subprocess.run (["mkdir", "-p" , output_dir])
 
         # fio jobfile
         jobfile = output_dir + '/jobfile.' + str (numjobs) + '.fio'
@@ -117,7 +107,6 @@ for dir_dict in dirlist:
 
         # run fio 
         subprocess.check_output (["fio", jobfile, fio_output_option])
-        i_inner += 1
 
     i_outer += 1
 
