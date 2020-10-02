@@ -1,31 +1,62 @@
 
-# simulate workloads running concurrently with etcd
+# parameters values here are small, geared for correctness testing
+# provide more realistic values via a parameters file
+# any parameter value here can be overridden that way
+
+# etcd_dirlist: list of directories for etcd-like workload
+# tool will iterate over this list and test latency on each one
+# fio will create a data set under these directories
+
+etcd_dirlist:
+  - dir: /tmp
+
+# directory for output of tests
+# a timestamped sub-directory is created under this directory
+output_dir: '.'
+
+# tool supports running workloads running concurrently with etcd-like load
+# two flavors supported: sequential write and random read/write
+# any one or both of these can be turned off
 add_seqw: true
 add_randrw: true
 
-# common parameters
-output_dir: '.'
-runtime_sec: 60
+# directories for each optional workload
+# fio will create a data set under these directories
+seqw_dir: /tmp
+randrw_dir: /tmp
+
+# common parameter for all tests
+runtime_sec: 20
 
 # primary workload parameters
 etc_bs_kb: 2
-etc_dir: /tmp
-# etc_logfile: will be {{ etc_dir }}/logfile
+# etc_logfile: will be etcd_dirlist[n]['dir']/logfile
 etc_fsz_gb: 4
+
+# specify data set size for optional workloads
+# file sizes are derived from these
+seqw_dataset_sz_gb: 2 
+randrw_dataset_sz_gb: 2
+
+# get latency for different load points
+# more numjobs usualy means higher load
+# iterate over these values
+#
+numjobs_list:
+  - 1
+  - 2
 
 # sequential write workload parameters
 seqw_syncfreq: 16 # fdatasync after this many I/Os
 seqw_bs_kb: 64
-seqw_dir: /tmp
-seqw_fsz_gb: 1
-seqw_numjobs: 1
+# seqw_numjobs: derived from numjobs_list
+# seqw_fsz_gb: derived using seqw_dataset_sz_gb and seqw_numjobs
 
 # random read/write workload parameters
 randrw_syncfreq: 64 # fdatasync after this many I/Os
 randrw_iodepth: 32
 randrw_bs_kb: 8
-randrw_dir: /tmp
-randrw_fsz_gb: 1
-randrw_numjobs: 1
 randrw_readpct: 70
+# randrw_numjobs: derived from numjobs_list
+# randrw_fsz_gb: derived using randrw_dataset_sz_gb and randrw_numjobs
 

@@ -1,25 +1,24 @@
 
-# etcd_dirlist: these should be on devices used by etcd
-# this allows testing latency of different etcd configurations
-# seqw_dir and randrw_dir should be on devices used by other workloads
-# typically, seqw_dir and randrw_dir are the same
-#
+# values provided here will override default values
+# any default parameter can be overriden
+# but only the ones listed here should be overridden
+# 
 etcd_dirlist:
-  - tag: ssd
-    dir: /tmp # /mnt/ssdmnt/raft
+  - tag: ssd  # some meaningful name for the test/config
+    dir: /tmp # /mnt/ssdmnt/etcd
   - tag: hdd
-    dir: /tmp # /mnt/hddmnt/raft
+    dir: /tmp # /mnt/hddmnt/etcd
 
 seqw_dir: /tmp # /mnt/hddnt/other
 randrw_dir: /tmp # /mnt/hddmnt/other
-output_dir: /tmp
+# output_dir: "."
 
 # target data set size >= 2x cache size (i.e. total memory)
 # power of 2 recommended, multiple of highest value in numjobs_list
 # make sure there is enough space on the devices
 #
-seqw_dataset_sz_gb: 4 # 64
-randrw_dataset_sz_gb: 4 # 128
+seqw_dataset_sz_gb: 4 
+randrw_dataset_sz_gb: 4 
 
 # get latency for different load points
 # more numjobs usualy means higher load
