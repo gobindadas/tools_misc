@@ -39,7 +39,7 @@ if run_params is None:
     run_params = {}
 
 # update default params with input values to get run params
-run_params.update (run_params)
+run_params.update (input_params)
 
 # dirlist is a list of dict
 dirlist = run_params.pop ('etcd_dirlist', [])
@@ -85,10 +85,10 @@ for dir_dict in dirlist:
 
         # derive file sizes
         run_params['seqw_fsz_gb'] = \
-            run_params['seqw_dataset_sz_gb'] / numjobs
+            int (run_params['seqw_dataset_sz_gb'] / numjobs)
 
         run_params['randrw_fsz_gb'] = \
-            run_params['randrw_dataset_sz_gb'] / numjobs
+            int (run_params['randrw_dataset_sz_gb'] / numjobs)
 
         file_loader = FileSystemLoader ('./templates')
         env = Environment (loader=file_loader, trim_blocks=True)
