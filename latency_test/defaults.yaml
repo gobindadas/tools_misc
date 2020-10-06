@@ -1,10 +1,11 @@
 
-# parameters values here are small, geared for correctness testing
+# parameters values in this default file are small, 
+# geared for correctness testing;
 # provide more realistic values via a parameters file
 # any parameter value here can be overridden that way
 
-# etcd_dirlist: list of directories for etcd-like workload
-# tool will iterate over this list and test latency on each one
+# etcd_dirlist: list of directories for etcd-like workload.
+# tool will iterate over this list and test latency on each one.
 # fio will create a data set under these directories
 
 etcd_dirlist:
@@ -14,33 +15,34 @@ etcd_dirlist:
 # a timestamped sub-directory is created under this directory
 output_dir: '.'
 
-# tool supports running workloads running concurrently with etcd-like load
-# two flavors supported: sequential write and random read/write
-# any one or both of these can be turned off
+# tool supports running workloads running concurrently with 
+# etcd-like load to gauge impact of additional load on latency.
+# two flavors supported: sequential write and random read/write.
+# any one or both of these can be turned off.
 add_seqw: true
 add_randrw: true
 
-# directories for each optional workload
-# fio will create a data set under these directories
+# directories for each optional workload.
+# fio will create a data set under these directories.
 seqw_dir: /tmp
 randrw_dir: /tmp
 
-# common parameter for all tests
+# common parameter for all tests.
 runtime_sec: 20
 
-# primary workload parameters
+# primary workload parameters.
 etc_bs_kb: 2
 # etc_logfile: will be etcd_dirlist[n]['dir']/logfile
 etc_fsz_gb: 4
 
-# specify data set size for optional workloads
-# file sizes are derived from these
+# specify data set size for optional workloads.
+# file sizes are derived from these.
 seqw_dataset_sz_gb: 2 
 randrw_dataset_sz_gb: 2
 
-# get latency for different load points
-# more numjobs usualy means higher load
-# iterate over these values
+# get latency for different load points.
+# more numjobs usualy means higher load.
+# iterate over these values.
 #
 numjobs_list:
   - 1
