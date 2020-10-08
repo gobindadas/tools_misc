@@ -2,19 +2,9 @@
 
 import argparse
 import yaml
-import time
 import subprocess
-import copy
 from jinja2 import Environment, FileSystemLoader
-
-# create a subdirectory based on a tag and current time
-def createdir_ts (path, tag):
-
-    ts = str (time.time ())
-    subdir = path + '/' + tag + ts
-
-    subprocess.run (["mkdir", subdir])
-    return subdir
+import util_functions
 
 parser = argparse.ArgumentParser ()
 parser.add_argument ("-i", "--input_file", help="name of yaml file with run parameters") 
@@ -51,7 +41,7 @@ njobslist = run_params.pop ('numjobs_list', [])
 if njobslist is None:
     njobslist = []
 
-run_outdir = createdir_ts (run_params['output_dir'], 'run_')
+run_outdir = util_functions.createdir_ts (run_params['output_dir'], 'run_')
 
 i_outer = 0
 for dir_dict in dirlist:
@@ -71,10 +61,14 @@ for dir_dict in dirlist:
     # set derived parameters
     run_params['etc_logfile'] = run_params['etc_dir'] + '/logfile'
 
-    print (f'test {run_tag}')
+    # useful later to capture list of all files created
+    all_dirs = [run_params['etc_dir'], run_params['seqw_dir'], \
+        run_params['randrw_dir']]
 
     output_dir = run_outdir + '/' + run_tag
     subprocess.run (["mkdir", "-p" , output_dir])
+
+    print (f'test {run_tag}')
 
     for numjobs in njobslist:
 
@@ -107,6 +101,18 @@ for dir_dict in dirlist:
 
         # run fio 
         subprocess.check_output (["fio", jobfile, fio_output_option])
+
+        # capture file listing for validation
+        ls_file = output_dir + '/ls_l.' + str (numjobs) 
+        util_functions.list_files (all_dirs, ls_file)
+
+        # truncate files
+        util_functions.truncate_files (run_params['etc_dir'], \
+            'logfile')
+        util_functions.truncate_files (run_params['seqw_dir'], \
+            run_params['seqw_prfx'])
+        util_functions.truncate_files (run_params['randrw_dir'], \
+            run_params['randrw_prfx'])
 
     i_outer += 1
 

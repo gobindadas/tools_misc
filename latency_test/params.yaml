@@ -17,8 +17,8 @@ randrw_dir: /tmp # /mnt/hddmnt/other
 # recommended: power of 2, multiple of highest value in numjobs_list
 # make sure there is enough space on the devices
 #
-seqw_dataset_sz_gb: 4 
-randrw_dataset_sz_gb: 4 
+seqw_dataset_sz_gb: 4
+randrw_dataset_sz_gb: 4
 
 # get latency for different load points
 # more numjobs usualy means higher load

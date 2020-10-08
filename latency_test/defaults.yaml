@@ -62,3 +62,7 @@ randrw_readpct: 70
 # randrw_numjobs: derived from numjobs_list
 # randrw_fsz_gb: derived using randrw_dataset_sz_gb and randrw_numjobs
 
+# prefix for filenames
+seqw_prfx: 'seqw'
+randrw_prfx: 'randrw'
+
