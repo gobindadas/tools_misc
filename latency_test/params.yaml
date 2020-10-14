@@ -1,17 +1,33 @@
 
 # values provided here will override default values
 # any default parameter can be overriden
-# but only the ones listed here should be overridden
-# 
+# but only the ones listed here _should_ be overridden
+
+# specify directory for output files
+# output_dir: "."
+
+# directories (mount points) to test for suitability for etcd
+# multiple mount points can be tested in a single run
 etcd_dirlist:
   - tag: ssd  # some meaningful name for the test/config
     dir: /tmp # /mnt/ssdmnt/etcd
   - tag: hdd
     dir: /tmp # /mnt/hddmnt/etcd
 
+# run time for each test
+runtime_sec: 180
+
+# uncomment these if you do not want to test impact of concurrent
+# workloads on etcd latency
+# add_seqw: False
+# add_randrw: False
+
+# the rest of the options are only meaning if 
+# add_seqw and add_randrw are True
+
+# mount points for workloads running concurrenly with etcd
 seqw_dir: /tmp # /mnt/hddnt/other
 randrw_dir: /tmp # /mnt/hddmnt/other
-# output_dir: "."
 
 # target data set size >= 2x cache size (i.e. total memory)
 # recommended: power of 2, multiple of highest value in numjobs_list
@@ -26,8 +42,4 @@ randrw_dataset_sz_gb: 4
 numjobs_list:
   - 2
   - 4
-
-# common parameter for all workloads
-#
-# runtime_sec: 180
 

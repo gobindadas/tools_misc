@@ -39,6 +39,7 @@ def list_files (dirlist, output_file):
             else:
                 ls_dirs = ls_dirs + ' ' + dir
 
+    command = 'ls -l' + ' ' + ls_dirs
     with open (output_file, 'w') as fh:
-        subprocess.run (["ls", "-l", ls_dirs], stdout=fh)
+        subprocess.run ([command], stdout=fh, shell=True)
 
