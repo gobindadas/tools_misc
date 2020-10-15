@@ -22,7 +22,7 @@ runtime_sec: 180
 # add_seqw: False
 # add_randrw: False
 
-# the rest of the options are only meaning if 
+# the rest of the options are only meaningful if 
 # add_seqw and add_randrw are True
 
 # mount points for workloads running concurrenly with etcd
