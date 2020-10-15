@@ -6,7 +6,7 @@
 # specify directory for output files
 # output_dir: "."
 
-# directories (mount points) to test for suitability for etcd
+# directories (mount points) planned for etcd storage
 # multiple mount points can be tested in a single run
 etcd_dirlist:
   - tag: ssd  # some meaningful name for the test/config
@@ -17,7 +17,7 @@ etcd_dirlist:
 # run time for each test
 runtime_sec: 180
 
-# uncomment these if you do not want to test impact of concurrent
+# uncomment these if you DO NOT want to test impact of concurrent
 # workloads on etcd latency
 # add_seqw: False
 # add_randrw: False
